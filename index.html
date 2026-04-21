@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DMI + 동민산업 재무 시뮬레이터</title>
+<title>DMI + 동민산업 재무 시뮬레이터 v2</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root {
@@ -14,7 +14,6 @@
     --text: #1A1A19;
     --text-2: #5F5E5A;
     --text-3: #8F8E88;
-    --accent: #534AB7;
     --success: #0F6E56;
     --danger: #A32D2D;
     --warning: #854F0B;
@@ -32,299 +31,167 @@
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
-  .app {
-    max-width: 1520px;
-    margin: 0 auto;
-    padding: 20px 24px 40px;
-  }
+  .app { max-width: 1520px; margin: 0 auto; padding: 20px 24px 40px; }
   header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+    display: flex; justify-content: space-between; align-items: flex-end;
     margin-bottom: 14px;
   }
-  header h1 {
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
-  header .sub {
-    font-size: 12px;
-    color: var(--text-2);
-    margin-top: 2px;
-  }
+  header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+  header .sub { font-size: 12px; color: var(--text-2); margin-top: 2px; }
   .scenario-bar {
-    display: flex;
-    gap: 4px;
-    background: var(--panel);
-    border: 0.5px solid var(--border);
-    border-radius: 6px;
-    padding: 3px;
+    display: flex; gap: 4px;
+    background: var(--panel); border: 0.5px solid var(--border);
+    border-radius: 6px; padding: 3px;
   }
   .scenario-bar label {
-    font-size: 12px;
-    padding: 5px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    color: var(--text-2);
+    font-size: 12px; padding: 5px 12px; border-radius: 4px;
+    cursor: pointer; color: var(--text-2);
   }
   .scenario-bar input[type="radio"] { display: none; }
-  .scenario-bar input[type="radio"]:checked + label {
-    background: var(--text);
-    color: #FFF;
-  }
+  .scenario-bar input[type="radio"]:checked + label { background: var(--text); color: #FFF; }
 
-  /* KPI Row */
-  .kpi-row {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
-    margin-bottom: 14px;
-  }
+  .kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 14px; }
   .kpi {
-    background: var(--panel);
-    border: 0.5px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
+    background: var(--panel); border: 0.5px solid var(--border);
+    border-radius: 8px; padding: 12px 14px;
   }
-  .kpi .label { font-size: 11px; color: var(--text-2); margin-bottom: 4px; letter-spacing: -0.01em; }
+  .kpi .label { font-size: 11px; color: var(--text-2); margin-bottom: 4px; }
   .kpi .value { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
   .kpi .unit { font-size: 12px; color: var(--text-3); margin-left: 3px; font-weight: 400; }
 
-  /* Main 3-column grid */
-  .main {
-    display: grid;
-    grid-template-columns: 380px 1fr 460px;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
+  .main { display: grid; grid-template-columns: 380px 1fr 460px; gap: 12px; margin-bottom: 14px; }
 
-  .panel {
-    background: var(--panel);
-    border: 0.5px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 16px;
-  }
+  .panel { background: var(--panel); border: 0.5px solid var(--border); border-radius: 8px; padding: 14px 16px; }
   .panel h2 {
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    letter-spacing: -0.01em;
+    font-size: 13px; font-weight: 600; margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between;
   }
-  .panel .tag {
-    font-size: 10px;
-    padding: 2px 7px;
-    border-radius: 10px;
-    font-weight: 500;
-  }
+  .panel .tag { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
   .tag-pvc { background: var(--pvc-tint); color: var(--pvc-text); }
   .tag-pe  { background: var(--pe-tint);  color: var(--pe-text); }
 
-  /* Sliders */
-  .slider-group { margin-bottom: 12px; }
-  .slider-group:last-child { margin-bottom: 0; }
   .slider-section-title {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-3);
-    margin: 10px 0 6px;
-    padding-top: 8px;
-    border-top: 0.5px dashed var(--border);
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--text-3); margin: 10px 0 6px;
+    padding-top: 8px; border-top: 0.5px dashed var(--border);
   }
-  .slider-section-title:first-child {
-    margin-top: 0;
-    padding-top: 0;
-    border-top: none;
-  }
-  .slider {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 6px;
-    margin-bottom: 6px;
-    align-items: center;
-  }
-  .slider .label {
-    font-size: 11px;
-    color: var(--text-2);
-    grid-column: 1 / -1;
-    margin-bottom: 2px;
-  }
+  .slider-section-title:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+
+  .slider { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin-bottom: 6px; align-items: center; }
+  .slider .label { font-size: 11px; color: var(--text-2); grid-column: 1 / -1; margin-bottom: 2px; }
   .slider input[type="range"] {
-    width: 100%;
-    height: 4px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: var(--border);
-    border-radius: 2px;
-    outline: none;
+    width: 100%; height: 4px;
+    -webkit-appearance: none; appearance: none;
+    background: var(--border); border-radius: 2px; outline: none;
   }
   .slider input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: var(--text);
-    cursor: pointer;
-    border: 2px solid #FFF;
+    -webkit-appearance: none; width: 14px; height: 14px;
+    border-radius: 50%; background: var(--text);
+    cursor: pointer; border: 2px solid #FFF;
     box-shadow: 0 0 0 0.5px var(--border-strong);
   }
   .slider input[type="range"]::-moz-range-thumb {
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: var(--text);
-    cursor: pointer;
-    border: 2px solid #FFF;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--text); cursor: pointer; border: 2px solid #FFF;
   }
   .slider .val {
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 12px; font-weight: 500;
     font-variant-numeric: tabular-nums;
-    min-width: 60px;
-    text-align: right;
-    color: var(--text);
+    min-width: 70px; text-align: right; color: var(--text);
   }
 
-  /* Two-column panel layout in left column */
-  .biz-tabs {
-    display: flex;
-    gap: 4px;
-    background: #F1EFE8;
-    border-radius: 6px;
-    padding: 3px;
-    margin-bottom: 12px;
+  /* Quick-pick chips for operating days */
+  .chip-row {
+    display: flex; gap: 4px; margin-bottom: 6px;
+    background: #F1EFE8; border-radius: 6px; padding: 3px;
   }
-  .biz-tabs button {
-    flex: 1;
-    border: none;
-    background: transparent;
-    padding: 7px 10px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-2);
-    border-radius: 4px;
-    cursor: pointer;
+  .chip-row button {
+    flex: 1; border: none; background: transparent;
+    padding: 5px 4px; font-size: 11px; font-weight: 500;
+    color: var(--text-2); border-radius: 4px; cursor: pointer;
     font-family: inherit;
   }
+  .chip-row button.active {
+    background: var(--panel); color: var(--text);
+    box-shadow: 0 0 0 0.5px var(--border-strong);
+  }
+
+  .biz-tabs {
+    display: flex; gap: 4px;
+    background: #F1EFE8; border-radius: 6px;
+    padding: 3px; margin-bottom: 12px;
+  }
+  .biz-tabs button {
+    flex: 1; border: none; background: transparent;
+    padding: 7px 10px; font-size: 12px; font-weight: 500;
+    color: var(--text-2); border-radius: 4px; cursor: pointer; font-family: inherit;
+  }
   .biz-tabs button.active {
-    background: var(--panel);
-    color: var(--text);
+    background: var(--panel); color: var(--text);
     box-shadow: 0 0 0 0.5px var(--border-strong);
   }
   .biz-panel { display: none; }
   .biz-panel.active { display: block; }
 
-  /* P&L Table */
-  .pnl-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
+  /* Volume summary card */
+  .vol-summary {
+    background: #FAFAF7; border-radius: 6px;
+    padding: 10px 12px; margin-top: 10px; margin-bottom: 4px;
+    font-size: 11px; color: var(--text-2); line-height: 1.7;
   }
+  .vol-summary strong { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .pnl-table { width: 100%; border-collapse: collapse; font-size: 12px; }
   .pnl-table th {
-    text-align: right;
-    padding: 6px 6px;
-    color: var(--text-3);
-    font-weight: 500;
-    border-bottom: 0.5px solid var(--border);
-    font-size: 11px;
+    text-align: right; padding: 6px 6px;
+    color: var(--text-3); font-weight: 500;
+    border-bottom: 0.5px solid var(--border); font-size: 11px;
   }
   .pnl-table th:first-child { text-align: left; }
-  .pnl-table td {
-    padding: 5px 6px;
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-  }
-  .pnl-table td:first-child {
-    text-align: left;
-    color: var(--text-2);
-  }
+  .pnl-table td { padding: 5px 6px; font-variant-numeric: tabular-nums; text-align: right; }
+  .pnl-table td:first-child { text-align: left; color: var(--text-2); }
   .pnl-table tr.subtotal td {
     border-top: 0.5px solid var(--border);
-    font-weight: 500;
-    color: var(--text);
-    background: #FAFAF7;
+    font-weight: 500; color: var(--text); background: #FAFAF7;
   }
   .pnl-table tr.total td {
     border-top: 1px solid var(--text);
-    font-weight: 600;
-    padding-top: 7px;
-    padding-bottom: 7px;
+    font-weight: 600; padding-top: 7px; padding-bottom: 7px;
   }
   .pos { color: var(--success); }
   .neg { color: var(--danger); }
 
-  /* Metrics section */
   .metrics {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 0.5px solid var(--border);
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 8px; margin-top: 12px;
+    padding-top: 12px; border-top: 0.5px solid var(--border);
   }
-  .metric {
-    background: #FAFAF7;
-    border-radius: 6px;
-    padding: 10px;
+  .metric { background: #FAFAF7; border-radius: 6px; padding: 10px; }
+  .metric .l {
+    font-size: 10px; color: var(--text-3); margin-bottom: 3px;
+    text-transform: uppercase; letter-spacing: 0.05em;
   }
-  .metric .l { font-size: 10px; color: var(--text-3); margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
   .metric .v { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
   .metric .n { font-size: 10px; color: var(--text-3); margin-top: 1px; }
 
-  /* Charts */
   .chart-stack { display: flex; flex-direction: column; gap: 12px; height: 100%; }
-  .chart-box {
-    background: var(--panel);
-    border: 0.5px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
-  }
-  .chart-box h3 {
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: var(--text);
-  }
+  .chart-box { background: var(--panel); border: 0.5px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+  .chart-box h3 { font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
   .chart-canvas-wrap { position: relative; height: 160px; }
 
-  /* Bottom comparison sections */
-  .bottom-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  .compare-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-  }
+  .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 12px; }
   .compare-table th, .compare-table td {
-    padding: 6px 8px;
-    border-bottom: 0.5px solid var(--border);
+    padding: 6px 8px; border-bottom: 0.5px solid var(--border);
     font-variant-numeric: tabular-nums;
   }
-  .compare-table th {
-    font-weight: 500;
-    color: var(--text-3);
-    text-align: right;
-    font-size: 11px;
-  }
-  .compare-table th:first-child, .compare-table td:first-child {
-    text-align: left;
-    color: var(--text-2);
-  }
+  .compare-table th { font-weight: 500; color: var(--text-3); text-align: right; font-size: 11px; }
+  .compare-table th:first-child, .compare-table td:first-child { text-align: left; color: var(--text-2); }
   .compare-table td { text-align: right; }
   .compare-table .delta-pos { color: var(--success); font-size: 11px; }
   .compare-table .delta-neg { color: var(--danger); font-size: 11px; }
 
-  footer {
-    margin-top: 16px;
-    font-size: 10px;
-    color: var(--text-3);
-    line-height: 1.6;
-  }
+  footer { margin-top: 16px; font-size: 10px; color: var(--text-3); line-height: 1.6; }
   footer strong { color: var(--text-2); font-weight: 500; }
 </style>
 </head>
@@ -333,8 +200,8 @@
 
 <header>
   <div>
-    <h1>DMI + 동민산업 재무 시뮬레이터</h1>
-    <div class="sub">DMI 이중수입 구조 (판매 + 처리매출) · 동민산업 매입 구조 · 정액법 감가상각 · KIBO/중진공 심사 지표 포함</div>
+    <h1>DMI + 동민산업 재무 시뮬레이터 v2</h1>
+    <div class="sub">생산량 기준 모델 · 시간당 생산량 × 22h × 월가동일 × 수율역산 투입량 · KIBO/중진공/GCF 심사지표 포함</div>
   </div>
   <div class="scenario-bar">
     <input type="radio" name="scn" id="scn-current" value="current" checked>
@@ -355,7 +222,6 @@
 
 <div class="main">
 
-  <!-- LEFT: Slider panel with tabs -->
   <div class="panel">
     <div class="biz-tabs">
       <button class="active" data-biz="pvc">DMI (PVC)</button>
@@ -363,21 +229,33 @@
       <button data-biz="common">공통·조달</button>
     </div>
 
-    <!-- DMI Sliders -->
+    <!-- DMI -->
     <div class="biz-panel active" id="biz-pvc">
-      <div class="slider-section-title">운영</div>
+      <div class="slider-section-title">설비 · 운영</div>
       <div class="slider"><div class="label">기존 라인 수</div><input type="range" id="pvc-lines-old" min="0" max="3" step="1" value="1"><div class="val" id="pvc-lines-old-v">1개</div></div>
       <div class="slider"><div class="label">증설 라인 수</div><input type="range" id="pvc-lines-new" min="0" max="3" step="1" value="0"><div class="val" id="pvc-lines-new-v">0개</div></div>
-      <div class="slider"><div class="label">라인당 처리량 (ton/년, 투입)</div><input type="range" id="pvc-capa" min="1000" max="4000" step="100" value="2000"><div class="val" id="pvc-capa-v">2,000</div></div>
-      <div class="slider"><div class="label">가동률 (%)</div><input type="range" id="pvc-util" min="50" max="95" step="1" value="80"><div class="val" id="pvc-util-v">80%</div></div>
-      <div class="slider"><div class="label">수율 (%)</div><input type="range" id="pvc-yield" min="60" max="95" step="1" value="85"><div class="val" id="pvc-yield-v">85%</div></div>
+      <div class="slider"><div class="label">라인당 시간당 생산량 (kg/h, 산출 기준)</div><input type="range" id="pvc-rate" min="200" max="2500" step="50" value="1000"><div class="val" id="pvc-rate-v">1,000</div></div>
+
+      <div class="slider"><div class="label">월 가동일 (일/월)</div></div>
+      <div class="chip-row" data-target="pvc-days">
+        <button data-val="18">18일</button>
+        <button data-val="22">22일</button>
+        <button data-val="25" class="active">25일</button>
+        <button data-val="28">28일</button>
+      </div>
+      <input type="hidden" id="pvc-days" value="25">
+
+      <div class="slider"><div class="label">가동률 (%)</div><input type="range" id="pvc-util" min="50" max="100" step="1" value="85"><div class="val" id="pvc-util-v">85%</div></div>
+      <div class="slider"><div class="label">수율 (%, 투입 대비 생산)</div><input type="range" id="pvc-yield" min="50" max="90" step="1" value="70"><div class="val" id="pvc-yield-v">70%</div></div>
+
+      <div class="vol-summary" id="pvc-vol">—</div>
 
       <div class="slider-section-title">수입</div>
       <div class="slider"><div class="label">처리매출 Tipping Fee (원/ton, 투입)</div><input type="range" id="pvc-tip" min="50000" max="300000" step="10000" value="150000"><div class="val" id="pvc-tip-v">150,000</div></div>
-      <div class="slider"><div class="label">재생 PVC 판매가 (원/kg)</div><input type="range" id="pvc-price" min="1500" max="4000" step="50" value="2800"><div class="val" id="pvc-price-v">2,800</div></div>
+      <div class="slider"><div class="label">재생 PVC 판매가 (원/kg, 생산)</div><input type="range" id="pvc-price" min="1500" max="4000" step="50" value="2800"><div class="val" id="pvc-price-v">2,800</div></div>
 
       <div class="slider-section-title">원가</div>
-      <div class="slider"><div class="label">전환비용 (원/kg, 투입)</div><input type="range" id="pvc-conv" min="100" max="1000" step="50" value="400"><div class="val" id="pvc-conv-v">400</div></div>
+      <div class="slider"><div class="label">전환비용 (원/kg, 투입 기준)</div><input type="range" id="pvc-conv" min="100" max="1000" step="50" value="400"><div class="val" id="pvc-conv-v">400</div></div>
       <div class="slider"><div class="label">잔재물 폐기비 (원/kg, 수율손실)</div><input type="range" id="pvc-disp" min="50" max="500" step="10" value="150"><div class="val" id="pvc-disp-v">150</div></div>
       <div class="slider"><div class="label">라인당 기타고정비 (억원, 감가 제외)</div><input type="range" id="pvc-fixed" min="1" max="10" step="0.5" value="3"><div class="val" id="pvc-fixed-v">3.0</div></div>
 
@@ -388,16 +266,28 @@
       <div class="slider"><div class="label">잔존가치율 (%)</div><input type="range" id="pvc-salv" min="0" max="20" step="1" value="10"><div class="val" id="pvc-salv-v">10%</div></div>
     </div>
 
-    <!-- PE Sliders -->
+    <!-- PE -->
     <div class="biz-panel" id="biz-pe">
-      <div class="slider-section-title">운영</div>
+      <div class="slider-section-title">설비 · 운영</div>
       <div class="slider"><div class="label">라인 수</div><input type="range" id="pe-lines" min="1" max="8" step="1" value="5"><div class="val" id="pe-lines-v">5개</div></div>
-      <div class="slider"><div class="label">라인당 처리량 (ton/년, 투입)</div><input type="range" id="pe-capa" min="500" max="3000" step="100" value="1200"><div class="val" id="pe-capa-v">1,200</div></div>
-      <div class="slider"><div class="label">가동률 (%)</div><input type="range" id="pe-util" min="50" max="95" step="1" value="75"><div class="val" id="pe-util-v">75%</div></div>
-      <div class="slider"><div class="label">수율 (%)</div><input type="range" id="pe-yield" min="60" max="95" step="1" value="78"><div class="val" id="pe-yield-v">78%</div></div>
+      <div class="slider"><div class="label">라인당 시간당 생산량 (kg/h, 산출 기준)</div><input type="range" id="pe-rate" min="300" max="3000" step="50" value="1500"><div class="val" id="pe-rate-v">1,500</div></div>
+
+      <div class="slider"><div class="label">월 가동일 (일/월)</div></div>
+      <div class="chip-row" data-target="pe-days">
+        <button data-val="18">18일</button>
+        <button data-val="22">22일</button>
+        <button data-val="25" class="active">25일</button>
+        <button data-val="28">28일</button>
+      </div>
+      <input type="hidden" id="pe-days" value="25">
+
+      <div class="slider"><div class="label">가동률 (%)</div><input type="range" id="pe-util" min="50" max="100" step="1" value="80"><div class="val" id="pe-util-v">80%</div></div>
+      <div class="slider"><div class="label">수율 (%, 투입 대비 생산)</div><input type="range" id="pe-yield" min="40" max="80" step="1" value="50"><div class="val" id="pe-yield-v">50%</div></div>
+
+      <div class="vol-summary" id="pe-vol">—</div>
 
       <div class="slider-section-title">수입·원료</div>
-      <div class="slider"><div class="label">재생 PE 판매가 (원/kg)</div><input type="range" id="pe-price" min="800" max="2500" step="50" value="1400"><div class="val" id="pe-price-v">1,400</div></div>
+      <div class="slider"><div class="label">재생 PE 판매가 (원/kg, 생산)</div><input type="range" id="pe-price" min="800" max="2500" step="50" value="1400"><div class="val" id="pe-price-v">1,400</div></div>
       <div class="slider"><div class="label">폐PE 매입가 (원/kg, 투입)</div><input type="range" id="pe-raw" min="100" max="1200" step="50" value="500"><div class="val" id="pe-raw-v">500</div></div>
 
       <div class="slider-section-title">원가</div>
@@ -411,8 +301,11 @@
       <div class="slider"><div class="label">잔존가치율 (%)</div><input type="range" id="pe-salv" min="0" max="20" step="1" value="10"><div class="val" id="pe-salv-v">10%</div></div>
     </div>
 
-    <!-- Common Sliders -->
+    <!-- Common -->
     <div class="biz-panel" id="biz-common">
+      <div class="slider-section-title">운영 기준</div>
+      <div class="slider"><div class="label">일 가동시간 (h/일)</div><input type="range" id="hours" min="16" max="24" step="1" value="22"><div class="val" id="hours-v">22시간</div></div>
+
       <div class="slider-section-title">판관비</div>
       <div class="slider"><div class="label">판관비율 (% · 매출 대비)</div><input type="range" id="sga" min="2" max="15" step="0.5" value="6"><div class="val" id="sga-v">6.0%</div></div>
 
@@ -425,7 +318,6 @@
     </div>
   </div>
 
-  <!-- CENTER: P&L + Metrics -->
   <div class="panel">
     <h2>합산 P&L <span style="font-size:11px; color:var(--text-3); font-weight:400;">(단위: 억원)</span></h2>
     <table class="pnl-table" id="pnl">
@@ -438,11 +330,10 @@
     <div class="metrics">
       <div class="metric"><div class="l">Gross Margin</div><div class="v" id="m-gm">—</div><div class="n">매출총이익률</div></div>
       <div class="metric"><div class="l">Contribution Margin</div><div class="v" id="m-cm">—</div><div class="n">변동비 차감 후</div></div>
-      <div class="metric"><div class="l">투자 대비 EBITDA</div><div class="v" id="m-roi">—</div><div class="n">회수기간 역수</div></div>
+      <div class="metric"><div class="l">투자 대비 EBITDA</div><div class="v" id="m-roi">—</div><div class="n">회수기간</div></div>
     </div>
   </div>
 
-  <!-- RIGHT: Charts -->
   <div class="chart-stack">
     <div class="chart-box">
       <h3>사업부별 매출·영업이익</h3>
@@ -459,7 +350,6 @@
   </div>
 </div>
 
-<!-- BOTTOM: Scenario comparisons -->
 <div class="bottom-grid">
   <div class="panel">
     <h2>계약 리스크 · Tipping Fee 종료 영향</h2>
@@ -475,21 +365,21 @@
   <div class="panel">
     <h2>증설 시나리오 · 현재 vs 3라인 체제</h2>
     <table class="compare-table">
-      <thead><tr><th>항목</th><th>현재 설정</th><th>DMI 3라인 (기존+증설)</th><th>Δ</th></tr></thead>
+      <thead><tr><th>항목</th><th>현재 설정</th><th>DMI 3라인</th><th>Δ</th></tr></thead>
       <tbody id="cmp-expand"></tbody>
     </table>
     <p style="font-size: 11px; color: var(--text-3); margin-top: 10px; line-height: 1.5;">
-      우측 열은 "기존 라인 수 + 증설 라인 수 = 3" 가정의 자동 계산입니다. 증설 투자액은 슬라이더에서 설정한 값을 그대로 사용하되, 증설 라인 수가 0이면 추정치(기존 투자액 × 2)로 대체합니다. 조달 구조는 별도 반영 필요.
+      우측 열은 "기존 + 증설 = 3라인" 가정의 자동 계산. 증설 투자액은 슬라이더 값을 그대로 사용하되 0이면 기존 투자액 비례 추정. 조달 구조는 별도 반영 필요.
     </p>
   </div>
 </div>
 
 <footer>
-  <strong>단위 주의:</strong> 처리량·수율·가동률은 <strong>투입 기준</strong>. Tipping Fee는 원/ton(투입), 판매가·전환비·폐기비는 원/kg. 감가상각은 연 단위 정액법 = (투자액 × (1 − 잔존가치율)) / 내용연수.
+  <strong>계산식:</strong> 연간 생산량(ton) = 시간당 생산량(kg/h) × 22h × 월가동일 × 12개월 × 라인수 × 가동률 ÷ 1,000. 연간 투입량 = 생산량 ÷ 수율. 잔재물 = 투입 − 생산.
   <br>
-  <strong>기본값 출처:</strong> 업계 추정치 기반 역산. DMI 영업이익률 35%+ 재현을 위한 근사치. 실적 기준으로 교정 필요.
+  <strong>단위 주의:</strong> 시간당 생산량·판매가는 <strong>산출(kg)</strong> 기준. Tipping Fee·전환비·폐기비·폐PE매입은 <strong>투입(kg/ton)</strong> 기준.
   <br>
-  <strong>DSCR 해석:</strong> EBITDA / (이자 + 원금상환). 1.3배 이상이 보증·심사 선호 구간.
+  <strong>기본값 출처:</strong> DMI 1,000kg/h·수율 70%, 동민 1,500kg/h·수율 50% — 대표님 제시값. 월 25일·22h 기준.
 </footer>
 
 </div>
@@ -497,9 +387,9 @@
 <script>
 (function() {
   const ids = [
-    'pvc-lines-old','pvc-lines-new','pvc-capa','pvc-util','pvc-yield','pvc-tip','pvc-price','pvc-conv','pvc-disp','pvc-fixed','pvc-inv-old','pvc-inv-new','pvc-life','pvc-salv',
-    'pe-lines','pe-capa','pe-util','pe-yield','pe-price','pe-raw','pe-conv','pe-disp','pe-fixed','pe-inv','pe-life','pe-salv',
-    'sga','int','prin','contract'
+    'pvc-lines-old','pvc-lines-new','pvc-rate','pvc-days','pvc-util','pvc-yield','pvc-tip','pvc-price','pvc-conv','pvc-disp','pvc-fixed','pvc-inv-old','pvc-inv-new','pvc-life','pvc-salv',
+    'pe-lines','pe-rate','pe-days','pe-util','pe-yield','pe-price','pe-raw','pe-conv','pe-disp','pe-fixed','pe-inv','pe-life','pe-salv',
+    'hours','sga','int','prin','contract'
   ];
   const el = {};
   ids.forEach(id => {
@@ -516,19 +406,19 @@
     return r ? r.value : 'current';
   }
 
-  // Core calculation engine. Optional `override` allows what-if overrides.
   function calc(override) {
     override = override || {};
     const v = {};
     ids.forEach(id => v[id] = parseFloat(el[id].value));
     Object.keys(override).forEach(k => v[k] = override[k]);
-
     const scenario = override.scenario || getScenario();
+    const H = v['hours'];
 
     // ===== DMI =====
     const pvcLines = v['pvc-lines-old'] + v['pvc-lines-new'];
-    const pvcInput = pvcLines * v['pvc-capa'] * v['pvc-util']/100;
-    const pvcOutput = pvcInput * v['pvc-yield']/100;
+    // 연간 생산량(ton) = kg/h × h × 일 × 12 × 라인 × 가동률 ÷ 1000
+    const pvcOutput = v['pvc-rate'] * H * v['pvc-days'] * 12 * pvcLines * v['pvc-util']/100 / 1000;
+    const pvcInput = v['pvc-yield'] > 0 ? pvcOutput / (v['pvc-yield']/100) : 0;
     const pvcLoss = pvcInput - pvcOutput;
 
     const pvcSaleRev = pvcOutput * v['pvc-price'] * 1000 / 1e8;
@@ -549,9 +439,9 @@
     const pvcCOGS = pvcVarCost + pvcFixed;
     const pvcGP = pvcRev - pvcCOGS;
 
-    // ===== 동민산업 =====
-    const peInput = v['pe-lines'] * v['pe-capa'] * v['pe-util']/100;
-    const peOutput = peInput * v['pe-yield']/100;
+    // ===== PE =====
+    const peOutput = v['pe-rate'] * H * v['pe-days'] * 12 * v['pe-lines'] * v['pe-util']/100 / 1000;
+    const peInput = v['pe-yield'] > 0 ? peOutput / (v['pe-yield']/100) : 0;
     const peLoss = peInput - peOutput;
 
     const peRev = peOutput * v['pe-price'] * 1000 / 1e8;
@@ -580,7 +470,6 @@
 
     const opm = totalRev > 0 ? totalOP/totalRev*100 : 0;
     const totalDep = pvcDep + peDep;
-    const totalFixed = pvcFixed + peFixed + sgaAmt; // fixed for BEP
     const totalVar = pvcVarCost + peVarCost;
     const ebitda = totalOP + totalDep;
 
@@ -588,12 +477,9 @@
     const dscr = debtService > 0 ? ebitda / debtService : Infinity;
 
     const gm = totalRev > 0 ? totalGP/totalRev*100 : 0;
-    // contribution margin = (rev - variable cost) / rev
     const contribution = totalRev - totalVar;
     const cm = totalRev > 0 ? contribution/totalRev*100 : 0;
 
-    // BEP 가동률: 현재 가동률 기준으로 역산. 매출·변동비 모두 가동률에 비례.
-    // 현재 기여이익이 고정비를 커버하려면 필요한 가동률 = 현재가동률 × (고정비/기여이익)
     const currentUtilRatio = contribution > 0 ? (pvcFixed + peFixed + sgaAmt) / contribution : Infinity;
     const avgUtil = (v['pvc-util'] + v['pe-util'])/2;
     const bepUtil = currentUtilRatio * avgUtil;
@@ -617,10 +503,8 @@
     };
   }
 
-  // Chart setup
   const chartDefaults = {
-    responsive: true,
-    maintainAspectRatio: false,
+    responsive: true, maintainAspectRatio: false,
     plugins: {
       legend: { labels: { font: { size: 10, family: 'inherit' }, boxWidth: 8, padding: 8 } },
       tooltip: { bodyFont: { size: 11 }, titleFont: { size: 11 } }
@@ -634,10 +518,9 @@
   let barChart, revChart, costChart;
 
   function render() {
-    // Update all slider readouts
     el['pvc-lines-old-v'].textContent = el['pvc-lines-old'].value + '개';
     el['pvc-lines-new-v'].textContent = el['pvc-lines-new'].value + '개';
-    el['pvc-capa-v'].textContent = fmt(parseFloat(el['pvc-capa'].value));
+    el['pvc-rate-v'].textContent = fmt(parseFloat(el['pvc-rate'].value)) + ' kg/h';
     el['pvc-util-v'].textContent = el['pvc-util'].value + '%';
     el['pvc-yield-v'].textContent = el['pvc-yield'].value + '%';
     el['pvc-tip-v'].textContent = fmt(parseFloat(el['pvc-tip'].value));
@@ -651,7 +534,7 @@
     el['pvc-salv-v'].textContent = el['pvc-salv'].value + '%';
 
     el['pe-lines-v'].textContent = el['pe-lines'].value + '개';
-    el['pe-capa-v'].textContent = fmt(parseFloat(el['pe-capa'].value));
+    el['pe-rate-v'].textContent = fmt(parseFloat(el['pe-rate'].value)) + ' kg/h';
     el['pe-util-v'].textContent = el['pe-util'].value + '%';
     el['pe-yield-v'].textContent = el['pe-yield'].value + '%';
     el['pe-raw-v'].textContent = fmt(parseFloat(el['pe-raw'].value));
@@ -663,12 +546,21 @@
     el['pe-life-v'].textContent = el['pe-life'].value + '년';
     el['pe-salv-v'].textContent = el['pe-salv'].value + '%';
 
+    el['hours-v'].textContent = el['hours'].value + '시간';
     el['sga-v'].textContent = fmt1(parseFloat(el['sga'].value)) + '%';
     el['int-v'].textContent = fmt1(parseFloat(el['int'].value));
     el['prin-v'].textContent = fmt1(parseFloat(el['prin'].value));
     el['contract-v'].textContent = el['contract'].value + '년';
 
     const r = calc();
+
+    // Volume summary cards
+    document.getElementById('pvc-vol').innerHTML =
+      `연간 생산 <strong>${fmt(r.pvc.output)}</strong>ton · 투입 <strong>${fmt(r.pvc.input)}</strong>ton · 잔재물 <strong>${fmt(r.pvc.loss)}</strong>ton` +
+      `<br>(라인 ${r.pvc.lines}개 · 월 ${el['pvc-days'].value}일 · ${el['hours'].value}h · 가동 ${el['pvc-util'].value}% · 수율 ${el['pvc-yield'].value}%)`;
+    document.getElementById('pe-vol').innerHTML =
+      `연간 생산 <strong>${fmt(r.pe.output)}</strong>ton · 투입 <strong>${fmt(r.pe.input)}</strong>ton · 잔재물 <strong>${fmt(r.pe.loss)}</strong>ton` +
+      `<br>(라인 ${el['pe-lines'].value}개 · 월 ${el['pe-days'].value}일 · ${el['hours'].value}h · 가동 ${el['pe-util'].value}% · 수율 ${el['pe-yield'].value}%)`;
 
     // KPI
     document.getElementById('k-rev').innerHTML = fmt(r.totalRev) + '<span class="unit">억원</span>';
@@ -713,12 +605,10 @@
       </tr>`;
     }).join('');
 
-    // Metrics
     document.getElementById('m-gm').textContent = fmt1(r.gm) + '%';
     document.getElementById('m-cm').textContent = fmt1(r.cm) + '%';
     document.getElementById('m-roi').textContent = isFinite(r.roiYears) && r.roiYears > 0 ? fmt1(r.roiYears) + '년' : '—';
 
-    // Charts
     const barData = {
       labels: ['DMI', '동민산업'],
       datasets: [
@@ -751,18 +641,15 @@
 
     if (barChart) { barChart.data = barData; barChart.update('none'); }
     else { barChart = new Chart(document.getElementById('c-bar'), { type: 'bar', data: barData, options: chartDefaults }); }
-
     if (revChart) { revChart.data = revData; revChart.update('none'); }
     else { revChart = new Chart(document.getElementById('c-rev'), { type: 'doughnut', data: revData,
       options: { responsive: true, maintainAspectRatio: false, cutout: '65%',
         plugins: { legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 8, padding: 6 } } } } }); }
-
     if (costChart) { costChart.data = costData; costChart.update('none'); }
     else { costChart = new Chart(document.getElementById('c-cost'), { type: 'doughnut', data: costData,
       options: { responsive: true, maintainAspectRatio: false, cutout: '60%',
         plugins: { legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 8, padding: 4 } } } } }); }
 
-    // Comparison tables
     const rExpired = calc({ scenario: 'expired' });
     renderCompare('cmp-contract', [
       ['매출', r.totalRev, rExpired.totalRev],
@@ -772,7 +659,6 @@
       ['DSCR', r.dscr, rExpired.dscr, false, true]
     ]);
 
-    // 증설 시나리오: 기존+증설 합 3라인. 증설라인=0이면 증설투자=기존투자×2로 가정.
     const curOld = parseFloat(el['pvc-lines-old'].value);
     const curNew = parseFloat(el['pvc-lines-new'].value);
     const curInvOld = parseFloat(el['pvc-inv-old'].value);
@@ -780,14 +666,15 @@
     const targetTotal = 3;
     const targetOld = Math.min(curOld, targetTotal);
     const targetNew = targetTotal - targetOld;
-    const targetInvNew = curInvNew > 0 ? curInvNew * (targetNew / Math.max(curNew, 1)) : curInvOld * (targetNew / Math.max(targetOld, 1));
+    const targetInvNew = curInvNew > 0 ? curInvNew : (targetOld > 0 ? curInvOld * (targetNew/targetOld) : 0);
     const rExpand = calc({
       'pvc-lines-old': targetOld,
       'pvc-lines-new': targetNew,
-      'pvc-inv-new': targetNew > 0 && curNew === 0 ? curInvOld * (targetNew/targetOld) : (curInvNew || curInvOld * (targetNew/Math.max(targetOld,1)))
+      'pvc-inv-new': targetInvNew
     });
     renderCompare('cmp-expand', [
       ['DMI 라인 수', r.pvc.lines, rExpand.pvc.lines, false, false, true],
+      ['DMI 연간 생산(ton)', r.pvc.output, rExpand.pvc.output],
       ['매출', r.totalRev, rExpand.totalRev],
       ['영업이익', r.totalOP, rExpand.totalOP],
       ['영업이익률(%)', r.opm, rExpand.opm, true],
@@ -801,7 +688,6 @@
     tbody.innerHTML = rows.map(row => {
       const [label, a, b, isPct, isRatio, isInt] = row;
       const delta = b - a;
-      const deltaPct = a !== 0 ? (delta/Math.abs(a))*100 : 0;
       let aStr, bStr, dStr;
       if (isRatio) {
         aStr = isFinite(a) ? fmt2(a) + '배' : '∞';
@@ -825,7 +711,19 @@
     }).join('');
   }
 
-  // Tab switching
+  // Chip row (monthly operating days) handler
+  document.querySelectorAll('.chip-row').forEach(row => {
+    const targetId = row.dataset.target;
+    row.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        row.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(targetId).value = btn.dataset.val;
+        render();
+      });
+    });
+  });
+
   document.querySelectorAll('.biz-tabs button').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.biz-tabs button').forEach(b => b.classList.remove('active'));
@@ -835,8 +733,7 @@
     });
   });
 
-  // Event bindings
-  ids.forEach(id => el[id].addEventListener('input', render));
+  ids.forEach(id => { if (el[id].type !== 'hidden') el[id].addEventListener('input', render); });
   document.querySelectorAll('input[name="scn"]').forEach(r => r.addEventListener('change', render));
 
   render();

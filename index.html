@@ -232,8 +232,8 @@
     <!-- DMI -->
     <div class="biz-panel active" id="biz-pvc">
       <div class="slider-section-title">설비 · 운영</div>
-      <div class="slider"><div class="label">기존 라인 수</div><input type="range" id="pvc-lines-old" min="0" max="3" step="1" value="1"><div class="val" id="pvc-lines-old-v">1개</div></div>
-      <div class="slider"><div class="label">증설 라인 수</div><input type="range" id="pvc-lines-new" min="0" max="3" step="1" value="0"><div class="val" id="pvc-lines-new-v">0개</div></div>
+      <div class="slider"><div class="label">기존 라인 수</div><input type="range" id="pvc-lines-old" min="0" max="3" step="1" value="0"><div class="val" id="pvc-lines-old-v">0개</div></div>
+      <div class="slider"><div class="label">증설 라인 수</div><input type="range" id="pvc-lines-new" min="0" max="3" step="1" value="2"><div class="val" id="pvc-lines-new-v">2개</div></div>
       <div class="slider"><div class="label">라인당 시간당 생산량 (kg/h, 산출 기준)</div><input type="range" id="pvc-rate" min="200" max="2500" step="50" value="1000"><div class="val" id="pvc-rate-v">1,000</div></div>
 
       <div class="slider"><div class="label">월 가동일 (일/월)</div></div>
@@ -252,7 +252,7 @@
 
       <div class="slider-section-title">수입</div>
       <div class="slider"><div class="label">처리매출 Tipping Fee (원/ton, 투입)</div><input type="range" id="pvc-tip" min="50000" max="300000" step="10000" value="150000"><div class="val" id="pvc-tip-v">150,000</div></div>
-      <div class="slider"><div class="label">재생 PVC 판매가 (원/kg, 생산)</div><input type="range" id="pvc-price" min="1500" max="4000" step="50" value="2800"><div class="val" id="pvc-price-v">2,800</div></div>
+      <div class="slider"><div class="label">재생 PVC 판매가 (원/kg, 생산)</div><input type="range" id="pvc-price" min="1500" max="4000" step="50" value="1700"><div class="val" id="pvc-price-v">1,700</div></div>
 
       <div class="slider-section-title">원가</div>
       <div class="slider"><div class="label">전환비용 (원/kg, 투입 기준)</div><input type="range" id="pvc-conv" min="100" max="1000" step="50" value="400"><div class="val" id="pvc-conv-v">400</div></div>
@@ -270,7 +270,7 @@
     <div class="biz-panel" id="biz-pe">
       <div class="slider-section-title">설비 · 운영</div>
       <div class="slider"><div class="label">라인 수</div><input type="range" id="pe-lines" min="1" max="8" step="1" value="5"><div class="val" id="pe-lines-v">5개</div></div>
-      <div class="slider"><div class="label">라인당 시간당 생산량 (kg/h, 산출 기준)</div><input type="range" id="pe-rate" min="300" max="3000" step="50" value="1500"><div class="val" id="pe-rate-v">1,500</div></div>
+      <div class="slider"><div class="label">라인당 시간당 생산량 (kg/h, 산출 기준)</div><input type="range" id="pe-rate" min="300" max="3000" step="50" value="650"><div class="val" id="pe-rate-v">650</div></div>
 
       <div class="slider"><div class="label">월 가동일 (일/월)</div></div>
       <div class="chip-row" data-target="pe-days">
@@ -287,7 +287,7 @@
       <div class="vol-summary" id="pe-vol">—</div>
 
       <div class="slider-section-title">수입·원료</div>
-      <div class="slider"><div class="label">재생 PE 판매가 (원/kg, 생산)</div><input type="range" id="pe-price" min="800" max="2500" step="50" value="1400"><div class="val" id="pe-price-v">1,400</div></div>
+      <div class="slider"><div class="label">재생 PE 판매가 (원/kg, 생산)</div><input type="range" id="pe-price" min="800" max="2500" step="50" value="1300"><div class="val" id="pe-price-v">1,300</div></div>
       <div class="slider"><div class="label">폐PE 매입가 (원/kg, 투입)</div><input type="range" id="pe-raw" min="100" max="1200" step="50" value="500"><div class="val" id="pe-raw-v">500</div></div>
 
       <div class="slider-section-title">원가</div>
@@ -379,7 +379,7 @@
   <br>
   <strong>단위 주의:</strong> 시간당 생산량·판매가는 <strong>산출(kg)</strong> 기준. Tipping Fee·전환비·폐기비·폐PE매입은 <strong>투입(kg/ton)</strong> 기준.
   <br>
-  <strong>기본값 출처:</strong> DMI 1,000kg/h·수율 70%, 동민 1,500kg/h·수율 50% — 대표님 제시값. 월 25일·22h 기준.
+  <strong>기본값 출처:</strong> DMI 기존0+증설2라인·1,000kg/h·판매가1,700원·수율70%, 동민 650kg/h·판매가1,300원·수율50% — 대표님 제시값. 월 25일·22h 기준.
 </footer>
 
 </div>

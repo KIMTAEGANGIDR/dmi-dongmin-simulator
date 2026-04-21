@@ -200,7 +200,7 @@
 <header>
   <div>
     <h1>DMI + 동민산업 재무 시뮬레이터 v3</h1>
-    <div class="sub">투입량 기준 모델 · DMI 3수입(PVC+pET+Tipping) · 실잔재 폐기 · 인건비+변동비 분리 · KIBO/중진공/GCF 심사지표</div>
+    <div class="sub">생산량 기준 모델 · DMI 3수입(PVC+pET+Tipping) · 실잔재 폐기 · 인건비+변동비 분리 · KIBO/중진공/GCF 심사지표</div>
   </div>
   <div class="scenario-bar">
     <input type="radio" name="scn" id="scn-current" value="current" checked>
@@ -233,7 +233,7 @@
       <div class="slider-section-title">설비 · 운영</div>
       <div class="slider"><div class="label">기존 라인 수</div><input type="range" id="pvc-lines-old" min="0" max="3" step="1" value="0"><div class="val" id="pvc-lines-old-v">0개</div></div>
       <div class="slider"><div class="label">증설 라인 수</div><input type="range" id="pvc-lines-new" min="0" max="3" step="1" value="2"><div class="val" id="pvc-lines-new-v">2개</div></div>
-      <div class="slider"><div class="label">라인당 시간당 투입량 (kg/h, 폐기물 기준)</div><input type="range" id="pvc-rate" min="200" max="3000" step="50" value="1000"><div class="val" id="pvc-rate-v">1,000 kg/h</div></div>
+      <div class="slider"><div class="label">라인당 시간당 생산량 (kg/h, 재생PVC 기준)</div><input type="range" id="pvc-rate" min="100" max="2000" step="50" value="700"><div class="val" id="pvc-rate-v">700 kg/h</div></div>
 
       <div class="slider"><div class="label">월 가동일 (일/월)</div></div>
       <div class="chip-row" data-target="pvc-days">
@@ -274,7 +274,7 @@
     <div class="biz-panel" id="biz-pe">
       <div class="slider-section-title">설비 · 운영</div>
       <div class="slider"><div class="label">라인 수</div><input type="range" id="pe-lines" min="1" max="8" step="1" value="5"><div class="val" id="pe-lines-v">5개</div></div>
-      <div class="slider"><div class="label">라인당 시간당 투입량 (kg/h, 폐PE 기준)</div><input type="range" id="pe-rate" min="200" max="3000" step="50" value="650"><div class="val" id="pe-rate-v">650 kg/h</div></div>
+      <div class="slider"><div class="label">라인당 시간당 생산량 (kg/h, 재생PE 기준)</div><input type="range" id="pe-rate" min="100" max="2000" step="50" value="455"><div class="val" id="pe-rate-v">455 kg/h</div></div>
 
       <div class="slider"><div class="label">월 가동일 (일/월)</div></div>
       <div class="chip-row" data-target="pe-days">
@@ -426,9 +426,9 @@
 
     // ===== DMI =====
     const pvcLines = v['pvc-lines-old'] + v['pvc-lines-new'];
-    // 투입량 기준: kg/h(투입) × h × 일 × 12개월 × 라인 × 가동률 ÷ 1000
-    const pvcInput  = v['pvc-rate'] * H * v['pvc-days'] * 12 * pvcLines * v['pvc-util']/100 / 1000;
-    const pvcOutput    = pvcInput * v['pvc-yield']/100;
+    // 생산량 기준: kg/h(PVC 생산) × h × 일 × 12개월 × 라인 × 가동률 ÷ 1000
+    const pvcOutput    = v['pvc-rate'] * H * v['pvc-days'] * 12 * pvcLines * v['pvc-util']/100 / 1000;
+    const pvcInput     = v['pvc-yield'] > 0 ? pvcOutput / (v['pvc-yield']/100) : 0;
     const pvcPetOutput = pvcInput * v['pvc-pet-yield']/100;
     const pvcWaste     = Math.max(0, pvcInput - pvcOutput - pvcPetOutput);
 
@@ -450,8 +450,9 @@
     const pvcGP     = pvcRev - pvcCOGS;
 
     // ===== 동민산업 =====
-    const peInput  = v['pe-rate'] * H * v['pe-days'] * 12 * v['pe-lines'] * v['pe-util']/100 / 1000;
-    const peOutput = peInput * v['pe-yield']/100;
+    // 생산량 기준: kg/h(PE 생산) × h × 일 × 12개월 × 라인 × 가동률 ÷ 1000
+    const peOutput = v['pe-rate'] * H * v['pe-days'] * 12 * v['pe-lines'] * v['pe-util']/100 / 1000;
+    const peInput  = v['pe-yield'] > 0 ? peOutput / (v['pe-yield']/100) : 0;
     const peWaste  = peInput - peOutput;
 
     const peRev       = peOutput * v['pe-price'] * 1000 / 1e8;
@@ -571,15 +572,14 @@
     // Volume summary - DMI
     const pvcWastePct = r.pvc.input > 0 ? (r.pvc.waste / r.pvc.input * 100).toFixed(1) : '0.0';
     document.getElementById('pvc-vol').innerHTML =
-      `연간 투입 <strong>${fmt(r.pvc.input)}</strong>ton` +
-      ` → PVC <strong>${fmt(r.pvc.output)}</strong>ton (${el['pvc-yield'].value}%)` +
-      ` · <span class="pet-line">pET <strong>${fmt(r.pvc.petOutput)}</strong>ton (${el['pvc-pet-yield'].value}%)</span>` +
+      `연간 생산 <strong>${fmt(r.pvc.output)}</strong>ton (투입 <strong>${fmt(r.pvc.input)}</strong>ton, 수율 ${el['pvc-yield'].value}%)` +
+      ` · <span class="pet-line">pET <strong>${fmt(r.pvc.petOutput)}</strong>ton</span>` +
       ` · 실잔재 <strong>${fmt(r.pvc.waste)}</strong>ton (${pvcWastePct}%)` +
       `<br>(${r.pvc.lines}라인 · 월 ${el['pvc-days'].value}일 · ${el['hours'].value}h · 가동률 ${el['pvc-util'].value}%)`;
 
     // Volume summary - PE
     document.getElementById('pe-vol').innerHTML =
-      `연간 투입 <strong>${fmt(r.pe.input)}</strong>ton → PE <strong>${fmt(r.pe.output)}</strong>ton (${el['pe-yield'].value}%) · 잔재 <strong>${fmt(r.pe.waste)}</strong>ton` +
+      `연간 생산 <strong>${fmt(r.pe.output)}</strong>ton (투입 <strong>${fmt(r.pe.input)}</strong>ton, 수율 ${el['pe-yield'].value}%) · 잔재 <strong>${fmt(r.pe.waste)}</strong>ton` +
       `<br>(${el['pe-lines'].value}라인 · 월 ${el['pe-days'].value}일 · ${el['hours'].value}h · 가동률 ${el['pe-util'].value}%)`;
 
     // KPI
